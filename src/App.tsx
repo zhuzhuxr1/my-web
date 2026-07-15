@@ -5,7 +5,8 @@ import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } 
 import { CSS } from '@dnd-kit/utilities';
 import { ChevronLeft, ChevronRight, Heart, ImagePlus, Send, Trash2, X } from 'lucide-react';
 import Scene from './Scene'
-import { asset, Message, messagesApi, Photo, photosApi, removePhoto } from './api';
+// 后端API全部注释，消除类型导入报错
+// import { asset, Message, messagesApi, Photo, photosApi, removePhoto } from './api';
 // 导入组件
 import CircularGallery from './CircularGallery/CircularGallery';
 // 导入组件样式
@@ -20,6 +21,7 @@ import p4 from './images/p4.jpg'
 import p5 from './images/p5.jpg'
 import p6 from './images/p6.jpg'
 import p7 from './images/p7.jpg'
+import p8 from './images/p8.jpg'
 import mypic from './images/mypic.jpg'
 // 动画通用配置
 const reveal = {
@@ -47,28 +49,41 @@ function daysUntil(targetDate: Date) {
   return Math.ceil((targetDate.getTime() - Date.now()) / 86400000);
 }
 
-// 可拖拽照片卡片组件
-function SortPhoto({ photo, onOpen, onDelete }: { photo: Photo; onOpen: () => void; onDelete: () => void }) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: photo.id });
+// ========== 卷轴轮播静态写死数组（替代后端galleryItems） ==========
+const galleryRollItems = [
+  {
+    id: "r1",
+    image: "http://localhost:8000/uploads/r1.jpg",
+    text: "去做美甲"
+  },
+  {
+    id: "r2",
+    image:"http://localhost:8000/uploads/r2.jpg",
+    text: "汉堡王"
+  },
+  {
+    id: "r3",
+    image:"http://localhost:8000/uploads/r3.jpg",
+    text: "武汉"
+  },
+  {
+    id: "r4",
+    image: "http://localhost:8000/uploads/r4.jpg",
+    text: "青梅竹马"
+  },
+  {
+    id: "r5",
+    image: "http://localhost:8000/uploads/r5.jpg",
+    text: "起飞"
+  },
+  {
+    id: "r6",
+    image: "http://localhost:8000/uploads/r6.jpg",
+    text: "阿猜"
+  },
+];
 
-  return (
-    <motion.article
-      ref={setNodeRef}
-      style={{ transform: CSS.Transform.toString(transform), transition }}
-      className="photo-card glow-card"
-      layout
-      {...attributes}
-    >
-      <button className="drag" {...listeners} aria-label="拖拽排序">⋮⋮</button>
-      <img loading="lazy" src={asset(photo.url)} onClick={onOpen} />
-      <button className="icon delete" onClick={onDelete}>
-        <Trash2 size={15} />
-      </button>
-    </motion.article>
-  );
-}
-
-// ===================== 顶层静态图片数组（函数外部） =====================
+// ===================== 瀑布流静态图片数组 =====================
 const photoItems = [
   {
     id: "1",
@@ -106,59 +121,86 @@ const photoItems = [
     url: "",
     height: 360,
   },
-{
+  {
     id: "7",
     img: p7,
     url: "",
     height: 700,
   },
+{
+    id: "8",
+    img: p8,
+    url: "",
+    height: 400,
+  },
 ];
+
+// 可拖拽照片组件（依赖后端Photo类型，整个注释屏蔽TS报错）
+/*
+function SortPhoto({ photo, onOpen, onDelete }: { photo: Photo; onOpen: () => void; onDelete: () => void }) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: photo.id });
+
+  return (
+    <motion.article
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className="photo-card glow-card"
+      layout
+      {...attributes}
+    >
+      <button className="drag" {...listeners} aria-label="拖拽排序">⋮⋮</button>
+      <img loading="lazy" src={asset(photo.url)} onClick={onOpen} />
+      <button className="icon delete" onClick={onDelete}>
+        <Trash2 size={15} />
+      </button>
+    </motion.article>
+  );
+}
+*/
 
 // ===================== 照片图库模块 =====================
 function Gallery() {
-  // 函数内部状态，所有变量全部在此定义
-  const [photos, setPhotos] = useState<Photo[]>([]);
-  const [preview, setPreview] = useState<number | null>(null);
-  const [page, setPage] = useState(0);
-  const [busy, setBusy] = useState(false);
+  // 后端相关状态全部注释
+  // const [photos, setPhotos] = useState<Photo[]>([]);
+  // const [preview, setPreview] = useState<number | null>(null);
+  // const [page, setPage] = useState(0);
+  // const [busy, setBusy] = useState(false);
+  // const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
+  // const perPage = 6;
+  // const visiblePhotos = photos.slice(page * perPage, page * perPage + perPage);
 
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
-  const perPage = 6;
-  const visiblePhotos = photos.slice(page * perPage, page * perPage + perPage);
-
-  // 上传图片
+  // 上传、删除接口函数注释
+  /*
   const handleUpload = async () => {
-  if (!selectedFile) return alert("请选择图片");
-  setUploadLoading(true);
-  const formData = new FormData();
-  formData.append("file", selectedFile);
-  formData.append("text", uploadText.trim() || "美好瞬间");
+    if (!selectedFile) return alert("请选择图片");
+    setUploadLoading(true);
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    formData.append("text", uploadText.trim() || "美好瞬间");
 
-  try {
-    const res = await fetch("http://localhost:8000/api/photos", {
-      method: "POST",
-      body: formData
-      // 全程不要手动写任何 Content-Type 请求头
-    });
-    const result = await res.json();
-    if (res.ok) {
-      await fetchPhotos();
-      setUploadOpen(false);
-      setSelectedFile(null);
-      setUploadText("");
-      alert("上传成功！页面已刷新照片");
-    } else {
-      alert(result.detail || "上传失败");
+    try {
+      const res = await fetch("http://localhost:8000/api/photos", {
+        method: "POST",
+        body: formData
+      });
+      const result = await res.json();
+      if (res.ok) {
+        await fetchPhotos();
+        setUploadOpen(false);
+        setSelectedFile(null);
+        setUploadText("");
+        alert("上传成功！页面已刷新照片");
+      } else {
+        alert(result.detail || "上传失败");
+      }
+    } catch (err) {
+      console.error("上传错误：", err);
+      alert("无法连接后端服务");
+    } finally {
+      setUploadLoading(false);
     }
-  } catch (err) {
-    console.error("上传错误：", err);
-    alert("无法连接后端服务");
-  } finally {
-    setUploadLoading(false);
-  }
-};
+  };
 
-  // 删除图片（移到函数顶部，不再写在return外面）
   const handleDelete = async (id: string) => {
     if (id.includes('.')) {
       try { await removePhoto(id); } catch {}
@@ -166,19 +208,18 @@ function Gallery() {
     setPhotos(prev => prev.filter(item => item.id !== id));
     setPreview(null);
   };
+  */
 
-  // 渲染页面，Masonry 写在Gallery内部，可正常读取busy、page、perPage、preview
   return (
     <>
-      {/* 新增Masonry瀑布流区域 */}
+      {/* 瀑布流标题 */}
       <div className="section-head">
         <span>02 / PHOTO ARCHIVE</span>
         <h2>每一帧，都在发光</h2>
-
-
       </div>
 
-    <div style={{ minHeight: 450, padding: '2rem 1rem', marginBottom: "6rem" }}>
+      {/* 仅保留静态Masonry瀑布流，无后端依赖 */}
+      <div style={{ minHeight: 450, padding: '2rem 1rem', marginBottom: "6rem" }}>
         <Masonry
           items={photoItems}
           ease="bounce.out"
@@ -190,9 +231,10 @@ function Gallery() {
           blurToFocus
           colorShiftOnHover={true}
         />
-</div>
+      </div>
 
-      {/* 原有拖拽排序区域 */}
+      {/* 拖拽、分页、预览全部注释，消除TS报错 */}
+      {/*
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -225,7 +267,6 @@ function Gallery() {
         </SortableContext>
       </DndContext>
 
-      {/* 分页控件 */}
       {photos.length > perPage && (
         <div className="pager">
           <button onClick={() => setPage(Math.max(0, page - 1))}>
@@ -238,7 +279,6 @@ function Gallery() {
         </div>
       )}
 
-      {/* 大图预览弹窗 */}
       <AnimatePresence>
         {preview !== null && photos[preview] && (
           <Preview
@@ -248,11 +288,13 @@ function Gallery() {
           />
         )}
       </AnimatePresence>
+      */}
     </>
   );
-} // Gallery 函数完整闭合
+}
 
-// ===================== 大图预览组件（放在所有函数外部，全局唯一） =====================
+// 大图预览组件（依赖后端Photo/asset，注释屏蔽）
+/*
 function Preview({ photo, onClose, onNext }: {
   photo: { url?: string; img?: string; id: string; } | Photo;
   onClose: () => void;
@@ -260,7 +302,6 @@ function Preview({ photo, onClose, onNext }: {
 }) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  // 兼容后端Photo(url) 和 Masonry静态图片(img)
   const imgSrc = photo.img || asset(photo.url!);
 
   return (
@@ -295,8 +336,10 @@ function Preview({ photo, onClose, onNext }: {
     </motion.div>
   );
 }
+*/
 
-// 留言模块
+// 留言模块（依赖后端接口，整体注释，避免打包报错）
+/*
 function Messages() {
   const [items, setItems] = useState<Message[]>([]);
   const [text, setText] = useState('');
@@ -310,7 +353,6 @@ function Messages() {
       .finally(() => setLoading(false));
   }, []);
 
-  // 发送留言
   const handleSend = async () => {
     if (!text.trim()) return;
     const tempText = text;
@@ -323,7 +365,6 @@ function Messages() {
     }
   };
 
-  // 删除留言
   const handleDelete = async (id: string) => {
     setItems(prev => prev.filter(item => item.id !== id));
     try { await messagesApi.remove(id); } catch {}
@@ -376,6 +417,7 @@ function Messages() {
     </motion.section>
   );
 }
+*/
 
 // 根页面组件
 function App() {
@@ -383,34 +425,37 @@ function App() {
   const [burst, setBurst] = useState<{ x: number; y: number; id: number } | null>(null);
   const [secret, setSecret] = useState(false);
   const cursorRef = useRef<HTMLDivElement>(null);
-  const [photos, setPhotos] = useState<{ url: string }[]>([]);
+  // 后端照片状态注释
+  // const [photos, setPhotos] = useState<{ url: string }[]>([]);
   const togetherDays = Math.floor((now - anniversary.getTime()) / 86400000);
   const nextAnniDays = daysUntil(new Date('2026-08-19'));
+
+  // 上传相关状态全部保留（你要求保留上传按钮弹窗）
   const [uploadOpen, setUploadOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadLoading, setUploadLoading] = useState(false);
-  const [uploadText, setUploadText] = useState(""); // 照片专属文案状态
+  const [uploadText, setUploadText] = useState("");
 
+  // 后端生成轮播数组注释，改用全局静态 galleryRollItems
+  /*
   const galleryItems = useMemo(() => {
-    // 兜底：不是数组直接返回空
     if (!Array.isArray(photos)) return [];
     return photos
-      // 过滤掉 null / undefined / 无id的项
       .filter(item => !!item && item.id)
-      // map 内部全部加可选链 ?.
       .map(p => ({
         id: p?.id,
         image: `http://localhost:8000/uploads/${p?.url ?? ""}`,
         text: p?.text || "我们的回忆"
       }));
   }, [photos]);
+  */
 
-  // ========== 全局唯一 fetchPhotos，放在所有useEffect外面 ==========
+  // 后端拉取图片接口注释
+  /*
   const fetchPhotos = async () => {
     try {
       const res = await fetch("http://localhost:8000/api/photos");
       const raw = await res.json();
-      // 兜底成空数组，再过滤有效图片
       const rawList = Array.isArray(raw) ? raw : [];
       const validList = rawList.filter(item => item?.id && item?.url);
       setPhotos(validList);
@@ -419,52 +464,54 @@ function App() {
       setPhotos([]);
     }
   };
+  */
 
-  // 选中图片文件
+  // 文件选择函数保留
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setSelectedFile(e.target.files[0]);
     }
   };
 
-  // 上传提交逻辑
+  // 上传接口函数保留（前端按钮弹窗正常显示，只是后端不存在会请求失败，不影响页面渲染）
   const handleUpload = async () => {
-  if (!selectedFile) return alert("请选择图片");
-  setUploadLoading(true);
-  const formData = new FormData();
-  formData.append("file", selectedFile);
-  formData.append("text", uploadText.trim() || "美好瞬间");
+    if (!selectedFile) return alert("请选择图片");
+    setUploadLoading(true);
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    formData.append("text", uploadText.trim() || "美好瞬间");
 
-  try {
-    const res = await fetch("http://localhost:8000/api/photos", {
-      method: "POST",
-      body: formData
-      // 这里不要写任何 headers 配置！！
-    });
-    const result = await res.json();
-    if (res.ok) {
-      await fetchPhotos();
-      setUploadOpen(false);
-      setSelectedFile(null);
-      setUploadText("");
-      alert("上传成功！页面已刷新照片");
-    } else {
-      alert(result.detail || "上传失败");
+    try {
+      const res = await fetch("http://localhost:8000/api/photos", {
+        method: "POST",
+        body: formData
+      });
+      const result = await res.json();
+      if (res.ok) {
+        // await fetchPhotos();
+        setUploadOpen(false);
+        setSelectedFile(null);
+        setUploadText("");
+        alert("上传成功！页面已刷新照片");
+      } else {
+        alert(result.detail || "上传失败");
+      }
+    } catch (err) {
+      console.error("上传错误：", err);
+      alert("无法连接后端服务");
+    } finally {
+      setUploadLoading(false);
     }
-  } catch (err) {
-    console.error("上传错误：", err);
-    alert("无法连接后端服务");
-  } finally {
-    setUploadLoading(false);
-  }
-};
+  };
 
-  // 页面初始化加载图片，只调用，不定义函数
+  // 页面初始化拉取图片effect注释
+  /*
   useEffect(() => {
     fetchPhotos();
   }, []);
+  */
 
-  // 鼠标、双击、右键监听 Effect
+  // 鼠标、双击彩蛋逻辑保留无影响
   useEffect(() => {
     let clickCount = 0;
     let throttleTimer: number | null = null;
@@ -508,7 +555,7 @@ function App() {
 
   return (
     <>
-      {/* 3D粒子背景 - 新增pointerEvents禁止拦截点击 */}
+      {/* 3D粒子背景 */}
       <Scene style={{
         position: "fixed",
         inset: 0,
@@ -521,70 +568,68 @@ function App() {
       <main>
         {/* 首页英雄区 */}
         <section className="hero">
-  {/* 左右分栏容器 */}
-  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "2rem" }}>
-    <div>
-      <p className="eyebrow">OUR LITTLE UNIVERSE · SINCE 2025.03.05</p>
-      <motion.h1
-        style={{ marginTop: "0px" }}
-        initial={{ opacity: 0, y: 25 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 2 }}
-      >
-        蛇蛇 and 鼠鼠<br />
-        <em>的记忆</em>
-      </motion.h1>
-      <p className="intro">在无数个普通的瞬间里，偏偏和你，拥有了宇宙级的浪漫。</p>
-    </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "2rem" }}>
+            <div>
+              <p className="eyebrow">OUR LITTLE UNIVERSE · SINCE 2025.03.05</p>
+              <motion.h1
+                style={{ marginTop: "0px" }}
+                initial={{ opacity: 0, y: 25 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 2 }}
+              >
+                蛇蛇 and 鼠鼠<br />
+                <em>的记忆</em>
+              </motion.h1>
+              <p className="intro">在无数个普通的瞬间里，偏偏和你，拥有了宇宙级的浪漫。</p>
+            </div>
 
-    {/* 右上角像素卡片 */}
-    <PixelTransition
-  // 交换两层！
-  firstContent={
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        display:"grid",
-        placeItems: "center",
-        backgroundColor: "#111"
-      }}
-    >
-      <p style={{ fontWeight: 900, fontSize: "4rem", color: "#fff" }}>🐖</p>
-    </div>
-  }
-  secondContent={
-    <img
-      src={mypic}
-      alt="bbb"
-      style={{ width: "100%", height: "100%", objectFit: "cover" }}
-    />
-  }
-  gridSize={8}
-  pixelColor="#fff"
-  once={false}
-  animationStepDuration={0.4}
-  className="custom-pixel-card"
-  style={{ width: "300px", height: "300px", flexShrink: 0 }}
-/>
-  </div>
+            {/* 右上角像素卡片 */}
+            <PixelTransition
+              firstContent={
+                <div
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    display:"grid",
+                    placeItems: "center",
+                    backgroundColor: "#111"
+                  }}
+                >
+                  <p style={{ fontWeight: 900, fontSize: "4rem", color: "#fff" }}>🐖</p>
+                </div>
+              }
+              secondContent={
+                <img
+                  src={mypic}
+                  alt="bbb"
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              }
+              gridSize={8}
+              pixelColor="#fff"
+              once={false}
+              animationStepDuration={0.4}
+              className="custom-pixel-card"
+              style={{ width: "300px", height: "300px", flexShrink: 0 }}
+            />
+          </div>
 
-  <div className="stats">
-    <div className="glass">
-      <b>{togetherDays}</b>
-      <span>个一起醒来的日子</span>
-    </div>
-    <div className="glass">
-      <b>{nextAnniDays}</b>
-      <span>天后又一个纪念日</span>
-    </div>
-  </div>
+          <div className="stats">
+            <div className="glass">
+              <b>{togetherDays}</b>
+              <span>个一起醒来的日子</span>
+            </div>
+            <div className="glass">
+              <b>{nextAnniDays}</b>
+              <span>天后又一个纪念日</span>
+            </div>
+          </div>
 
           <a href="#story" className="scroll">向下收集回忆 ↓</a>
         </section>
 
         <div style={{ marginTop: "-300px" }}>
-          {/* ========== 上传按钮：加position+zIndex防遮挡 ========== */}
+          {/* 上传按钮完整保留，不注释 */}
           {!uploadOpen && (
             <div style={{ textAlign: "center", marginBottom: "20px" }}>
               <button
@@ -606,6 +651,7 @@ function App() {
             </div>
           )}
 
+          {/* 卷轴轮播完整保留，items替换为静态写死数组 galleryRollItems */}
           <div style={{ height: '600px', position: 'relative' }}>
             <CircularGallery
               bend={0.3}
@@ -615,7 +661,7 @@ function App() {
               fontUrl="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap"
               font="30px ZCOOL KuaiLe"
               scrollSpeed={2}
-              items={galleryItems}
+              items={galleryRollItems}
             />
           </div>
         </div>
@@ -648,20 +694,20 @@ function App() {
           ))}
         </motion.section>
 
-        {/* 照片图库（Masonry已内置在Gallery内部，根App不再重复写瀑布流） */}
+        {/* 瀑布流图库保留 */}
         <Gallery />
 
-        {/* 留言板 */}
-        <Messages />
+        {/* 留言板整体注释，无后端接口会报错 */}
+        {/* <Messages /> */}
       </main>
 
-      {/* 上传弹窗 位于<>内部，层级最高 */}
+      {/* 上传弹窗完整保留 */}
       {uploadOpen && (
         <div style={{
           position: "fixed",
           inset: 0,
           background: "rgba(0,0,0,0.75)",
-          zIndex: 100000, // 加高层级，不会被按钮遮挡
+          zIndex: 100000,
           display: "flex",
           alignItems: "center",
           justifyContent: "center"
@@ -677,7 +723,6 @@ function App() {
             <h3 style={{ margin: 0, marginBottom: "16px" }}>上传新回忆照片</h3>
             <input
               type="file"
-
               onChange={handleFileChange}
               style={{ margin: "10px 0 16px" }}
             />
@@ -739,6 +784,7 @@ function App() {
           </div>
         </div>
       )}
+
       {/* 页脚 */}
       <footer>
         Made with <Heart size={14} fill="currentColor" /> for our forever <span>✦</span>

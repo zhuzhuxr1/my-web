@@ -6,7 +6,7 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
     "esModuleInterop": true,
-    // 下面三行关闭严格类型，消除所有TS报错
+
     "strict": false,
     "noImplicitAny": false,
     "strictNullChecks": false,
