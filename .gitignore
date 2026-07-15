@@ -1,0 +1,8 @@
+node_modules
+dist
+__pycache__
+backend/uploads
+.venv
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts

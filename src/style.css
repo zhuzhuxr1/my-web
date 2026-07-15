@@ -1,0 +1,607 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Outfit:wght@300;400;500;600&display=swap');
+
+/* 全局根变量、基础重置 */
+:root {
+  font-family: Outfit, "Noto Sans SC", sans-serif;
+  color: #f6efff;
+  background: #080510;
+  scroll-behavior: smooth;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+button,
+input,
+textarea,
+label {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+
+
+/* 3D背景画布 */
+.scene {
+  position: fixed;
+  inset: 0;
+  z-index: -3;
+  pointer-events: none;
+}
+
+.scene:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 15%, #6e30683b, transparent 34%),
+    linear-gradient(#08051020, #080510ee 80%);
+  pointer-events: none;
+}
+
+/* 自定义爱心光标 */
+.cursor-heart {
+  position: fixed;
+  z-index: 50;
+  pointer-events: none;
+  color: #ff9fcf;
+  font-size: 19px;
+  filter: drop-shadow(0 0 8px #ff5ba9);
+  transform: translate(-50%, -50%);
+  animation: none;
+  will-change: transform;;
+}
+
+@keyframes follow {
+  50% {
+    scale: 1.25;
+  }
+}
+
+/* 页面主体容器 */
+main {
+  max-width: 1120px;
+  margin: auto;
+  padding: 0 28px;
+}
+
+/* 首页英雄区域 */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 110px 0 80px;
+  transform: translateY(-150px);
+}
+
+.eyebrow,
+.section-head span {
+  font-size: 11px;
+  letter-spacing: .25em;
+  color: #d8a9ed;
+}
+
+.hero h1 {
+  font: 600 clamp(48px, 8vw, 105px)/1.05 "Noto Serif SC", serif;
+  letter-spacing: -.06em;
+  margin: 18px 0;
+}
+
+.hero em {
+  font-style: normal;
+  background: linear-gradient(110deg, #fff4fe, #b879ff 43%, #ff9ccc);
+  background-clip: text;
+  color: transparent;
+}
+
+.intro {
+  max-width: 420px;
+  line-height: 1.9;
+  color: #cbbcd4;
+}
+
+.stats {
+  display: flex;
+  gap: 13px;
+  margin-top: 34px;
+}
+
+/* 毛玻璃通用类 */
+.glass {
+  background: linear-gradient(125deg, #ffffff15, #e9b8ff09);
+  border: 1px solid #ffffff23;
+  box-shadow: 0 14px 50px #00000027, inset 0 1px #ffffff18;
+  backdrop-filter: blur(14px);
+}
+
+.stats > div {
+  min-width: 165px;
+  padding: 15px 19px;
+  border-radius: 18px;
+}
+
+.stats b {
+  display: block;
+  font-size: 29px;
+  background: linear-gradient(100deg, #dca4ff, #ffb2d5);
+  background-clip: text;
+  color: transparent;
+}
+
+.stats span {
+  font-size: 12px;
+  color: #cbb9d1;
+}
+
+.scroll {
+  margin-top: 48px;
+  color: #f4c9e1;
+  text-decoration: none;
+  font-size: 13px;
+  letter-spacing: .12em;
+}
+
+/* 通用板块样式 */
+.section {
+  padding: 105px 0;
+}
+
+.section-head {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.section-head h2 {
+  font: 600 clamp(28px, 4vw, 48px)/1.2 "Noto Serif SC", serif;
+  margin: 10px 0;
+}
+
+/* 时间线故事模块 */
+.timeline {
+  max-width: 760px;
+}
+
+.story {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin: 16px 0;
+  padding: 25px 30px;
+  border-radius: 22px;
+  position: relative;
+}
+
+.story i {
+  font-style: normal;
+  font-size: 20px;
+  color: #e6a4ef;
+}
+
+.story h3 {
+  margin: 0 0 8px;
+  font: 600 20px "Noto Serif SC", serif;
+}
+
+.story p {
+  margin: 0;
+  color: #cdbfd5;
+  font-size: 14px;
+}
+
+.story svg {
+  margin-left: auto;
+  color: #f69acb;
+}
+
+/* 发光卡片hover效果 */
+.glow-card {
+  transition: transform .35s ease, box-shadow .35s ease;
+}
+
+.glow-card:hover {
+  transform: translateY(-6px) scale(1.012);
+  box-shadow: 0 20px 55px #d959c236, 0 0 0 1px #ffb5e450;
+}
+
+/* 上传按钮 */
+.upload {
+  position: absolute;
+  right: 0;
+  bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px dashed #eaa5d6;
+  border-radius: 12px;
+  color: #f2b3db;
+  font-size: 13px;
+  transition: .25s;
+}
+
+.upload:hover {
+  background: #f0a5d827;
+  box-shadow: 0 0 20px #d763ae55;
+  transform: translateY(-2px);
+}
+
+.upload input {
+  display: none;
+}
+
+/* 照片图库 */
+.gallery {
+  min-height: 214px;
+  padding: 15px;
+  border-radius: 25px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.photo-card {
+  height: 190px;
+  overflow: hidden;
+  border-radius: 16px;
+  position: relative;
+  background: #1a1026;
+}
+
+.photo-card img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  cursor: zoom-in;
+  opacity: 0;
+  animation: fade .5s forwards;
+}
+
+@keyframes fade {
+  to {
+    opacity: 1;
+  }
+}
+
+/* 通用图标按钮 */
+.icon,
+.nav {
+  border: 0;
+  color: #fff;
+  background: #151020a6;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+
+.delete {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  opacity: 0;
+  transition: .2s;
+}
+
+.photo-card:hover .delete,
+.note:hover .delete {
+  opacity: 1;
+}
+
+.drag {
+  position: absolute;
+  left: 7px;
+  top: 7px;
+  z-index: 2;
+  background: #17101eaa;
+  border: 0;
+  color: #fff;
+  border-radius: 8px;
+  letter-spacing: -3px;
+  opacity: 0;
+}
+
+.photo-card:hover .drag {
+  opacity: 1;
+}
+
+.empty {
+  place-self: center;
+  text-align: center;
+  grid-column: 1 / -1;
+  color: #c8b6cf;
+  line-height: 1.9;
+}
+
+.empty small {
+  color: #83738e;
+}
+
+/* 分页器 */
+.pager {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 19px;
+}
+
+.pager button,
+.more {
+  border: 1px solid #ffffff25;
+  border-radius: 12px;
+  color: #eec7e8;
+  background: #ffffff0d;
+  padding: 7px 11px;
+}
+
+.pager svg {
+  width: 16px;
+}
+
+.pager span {
+  font-size: 12px;
+  color: #d1bdd3;
+}
+
+/* 留言框 */
+.message-box {
+  border-radius: 23px;
+  padding: 15px;
+}
+
+.message-box textarea {
+  display: block;
+  width: 100%;
+  height: 105px;
+  resize: vertical;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: white;
+  line-height: 1.7;
+}
+
+.message-box button {
+  float: right;
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 15px;
+  background: linear-gradient(110deg, #b860db, #ff91ba);
+  color: white;
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  transition: .25s;
+}
+
+.message-box button:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 8px 25px #c462c766;
+}
+
+.message-box:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+/* 留言卡片列表 */
+.notes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.note {
+  border-radius: 18px;
+  padding: 21px 23px;
+  position: relative;
+  min-height: 128px;
+}
+
+.note p {
+  white-space: pre-wrap;
+  line-height: 1.75;
+  margin: 0 0 18px;
+  background: linear-gradient(100deg, #ffd6ed, #be9eff);
+  background-clip: text;
+  color: transparent;
+}
+
+.note time {
+  font-size: 11px;
+  color: #a995af;
+}
+
+.more {
+  display: block;
+  margin: 22px auto;
+}
+
+/* 弹窗遮罩层 */
+.modal-shade,
+.secret {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: #080510d9;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  backdrop-filter: blur(8px);
+}
+
+.preview {
+  width: min(900px, 94vw);
+  height: min(78vh, 670px);
+  position: relative;
+}
+
+.preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 18px;
+  box-shadow: 0 20px 80px #000;
+}
+
+.close {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+}
+
+.nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.prev {
+  left: 10px;
+}
+
+.next {
+  right: 10px;
+}
+
+/* 点击爆炸爱心 */
+.burst {
+  position: fixed;
+  z-index: 45;
+  pointer-events: none;
+}
+
+.burst i {
+  position: absolute;
+  color: #ff91c8;
+  font-style: normal;
+  text-shadow: 0 0 11px #ff59b3;
+}
+
+/* 彩蛋弹窗 */
+.secret > div {
+  width: min(440px, 90vw);
+  padding: 44px 37px;
+  border-radius: 28px;
+  text-align: center;
+  position: relative;
+}
+
+.secret svg {
+  color: #f798cf;
+  width: 34px;
+  height: 34px;
+}
+
+.secret h2 {
+  font-family: "Noto Serif SC";
+  margin: 16px;
+}
+
+.secret p {
+  line-height: 1.9;
+  color: #d3c2d8;
+}
+
+/* 页脚 */
+footer {
+  text-align: center;
+  padding: 90px 20px 36px;
+  color: #bfaac5;
+  font-size: 12px;
+  letter-spacing: .08em;
+  background: radial-gradient(ellipse at center bottom, #8d277b4d, transparent 60%);
+}
+
+footer svg {
+  vertical-align: middle;
+  color: #ff8ac5;
+}
+
+footer span {
+  color: #dba5ff;
+}
+
+/* 移动端适配 */
+@media (max-width: 620px) {
+  body {
+    cursor: auto;
+  }
+
+  .cursor-heart {
+    display: none;
+  }
+
+  main {
+    padding: 0 18px;
+  }
+
+  .hero {
+    min-height: 92vh;
+  }
+
+  .stats {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .stats > div {
+    min-width: 0;
+  }
+
+  .section {
+    padding: 72px 0;
+  }
+
+  .upload {
+    position: static;
+    width: max-content;
+    margin-top: 15px;
+  }
+
+  .gallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .photo-card {
+    height: 145px;
+  }
+
+  .notes {
+    grid-template-columns: 1fr;
+  }
+
+  .story {
+    padding: 20px;
+    gap: 16px;
+  }
+
+  .story svg {
+    display: none;
+  }
+
+  .section-head h2 {
+    font-size: 31px;
+  }
+
+  .preview {
+    height: 65vh;
+  }
+
+  .nav {
+    display: none;
+  }
+}
