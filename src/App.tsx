@@ -53,32 +53,32 @@ function daysUntil(targetDate: Date) {
 const galleryRollItems = [
   {
     id: "r1",
-    image: "http://localhost:8000/uploads/r1.jpg",
+    image: "/uploads/r1.jpg",
     text: "去做美甲"
   },
   {
     id: "r2",
-    image:"http://localhost:8000/uploads/r2.jpg",
+    image:"/uploads/r2.jpg",
     text: "汉堡王"
   },
   {
     id: "r3",
-    image:"http://localhost:8000/uploads/r3.jpg",
+    image:"/uploads/r3.jpg",
     text: "武汉"
   },
   {
     id: "r4",
-    image: "http://localhost:8000/uploads/r4.jpg",
+    image: "/uploads/r4.jpg",
     text: "青梅竹马"
   },
   {
     id: "r5",
-    image: "http://localhost:8000/uploads/r5.jpg",
+    image: "/uploads/r5.jpg",
     text: "起飞"
   },
   {
     id: "r6",
-    image: "http://localhost:8000/uploads/r6.jpg",
+    image: "/uploads/r6.jpg",
     text: "阿猜"
   },
 ];

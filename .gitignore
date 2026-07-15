@@ -1,7 +1,7 @@
 node_modules
 dist
 __pycache__
-backend/uploads
+public/uploads
 .venv
 *.tsbuildinfo
 vite.config.js
